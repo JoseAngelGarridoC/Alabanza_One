@@ -1,0 +1,3879 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Alabanza — Nashville</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+
+    /* ══════════════════════════════════
+       TEMA OSCURO (por defecto) - Notion Editorial
+    ══════════════════════════════════ */
+    :root {
+      --bg-primary: #191919;
+      --bg-secondary: #202020;
+      --bg-tertiary: #2F2F2F;
+      --surface: #252525;
+      --surface-hover: #333333;
+      --border: #2F2F2F;
+      --text-primary: #E3E3E3;
+      --text-secondary: #A4A4A4;
+      --text-muted: #6B6B6B;
+      --accent: #2EAADC;
+      --accent-soft: rgba(46, 170, 220, 0.15);
+      --gold: #D4AF37;
+      --gold-dim: rgba(212, 175, 55, 0.6);
+    }
+
+    /* ══════════════════════════════════
+       TEMA CLARO - Notion Editorial
+    ══════════════════════════════════ */
+    body.light {
+      --bg-primary: #FBFBFA;
+      --bg-secondary: #F1F1EF;
+      --bg-tertiary: #EDEDEB;
+      --surface: #FFFFFF;
+      --surface-hover: #F7F7F5;
+      --border: #EDEDEB;
+      --text-primary: #37352F;
+      --text-secondary: #5A5A57;
+      --text-muted: #9B9A97;
+      --accent: #2383E2;
+      --accent-soft: rgba(35, 131, 226, 0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      display: flex;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ── Scrollbars ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--accent-soft); border-radius: 2px; }
+
+    /* ══════════════════════════════════
+       SIDEBAR
+    ══════════════════════════════════ */
+    #sidebar {
+      width: 285px;
+      min-width: 285px;
+      height: 100vh;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: width 0.3s cubic-bezier(0.4,0,0.2,1),
+                  min-width 0.3s cubic-bezier(0.4,0,0.2,1),
+                  opacity 0.25s ease,
+                  border-color 0.3s,
+                  background 0.3s;
+    }
+
+    body.sidebar-hidden #sidebar {
+      width: 0;
+      min-width: 0;
+      opacity: 0;
+      border-right-color: transparent;
+    }
+
+    /* Brand area */
+    .brand-area {
+      padding: 24px 18px 18px 22px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      transition: border-color 0.3s;
+    }
+
+    .brand-text { flex: 1; min-width: 0; }
+
+    .brand-top {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    .brand-name {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    .brand-sub {
+      margin-top: 8px;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      white-space: nowrap;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-weight: 500;
+    }
+
+    /* ── Botón Hamburguesa ── */
+    .ham-btn {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: var(--surface);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      flex-shrink: 0;
+      transition: border-color 0.2s, background 0.2s;
+      margin-top: 2px;
+    }
+
+    .ham-btn:hover { 
+      background: var(--surface-hover);
+      border-color: var(--text-secondary);
+    }
+
+    .ham-bar {
+      width: 12px;
+      height: 1px;
+      background: var(--text-secondary);
+      border-radius: 0.5px;
+    }
+
+    /* ── Botón flotante para reabrir ── */
+    #btn-reopen {
+      position: fixed;
+      top: 28px;
+      left: 10px;
+      z-index: 200;
+      width: 34px;
+      height: 34px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, background 0.2s, border-color 0.2s;
+    }
+
+    body.sidebar-hidden #btn-reopen { opacity: 1; pointer-events: all; }
+    #btn-reopen:hover { 
+      background: var(--surface-hover);
+      border-color: var(--text-secondary);
+    }
+
+    /* ── Buscador ── */
+    .search-wrap { padding: 12px 14px 8px; flex-shrink: 0; }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      color: var(--text-primary);
+      outline: none;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus { border-color: var(--accent); background: var(--bg-tertiary); }
+
+    /* ── Lista canciones ── */
+    #song-list { flex: 1; overflow-y: auto; padding-bottom: 8px; }
+
+    .list-section-header {
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding: 12px 22px 6px;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-weight: 500;
+    }
+
+    .song-item {
+      cursor: pointer;
+      padding: 10px 22px;
+      border-left: none;
+      transition: background 0.2s;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .song-item:hover { background: var(--surface); }
+    .song-item.active { background: var(--surface); border-left: 2px solid var(--accent); padding-left: 20px; }
+
+    .song-num {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      padding-top: 2px;
+      min-width: 18px;
+      font-weight: 500;
+    }
+
+    .song-info { flex: 1; min-width: 0; }
+
+    .song-title-list {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+      transition: color 0.2s;
+    }
+
+    .song-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .star-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.9rem;
+      padding: 0;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .star-btn:hover { color: var(--text-secondary); }
+    .star-btn.fav { color: var(--gold); }
+
+    /* ══════════════════════════════════
+       MAIN CONTENT
+    ══════════════════════════════════ */
+    #main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-primary);
+      overflow: hidden;
+    }
+
+    /* Header del main */
+    .main-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 28px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .main-header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .main-header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 8px 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-btn:hover {
+      background: var(--surface-hover);
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+    }
+
+    .header-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .header-btn.primary:hover {
+      background: #249CCC;
+    }
+
+    /* Content area */
+    #content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px;
+    }
+
+    #welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+    }
+
+    .welcome-icon {
+      font-size: 3.5rem;
+      margin-bottom: 16px;
+      opacity: 0.7;
+    }
+
+    .deco-line {
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--accent), transparent);
+      margin: 0 auto;
+    }
+
+    #song-view {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .bg-key-deco {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 8rem;
+      font-weight: 700;
+      color: var(--accent);
+      opacity: 0.08;
+      font-family: 'Geist', 'Cinzel', serif;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .song-artist-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 12px;
+    }
+
+    .song-main-title {
+      font-family: 'Geist', 'Inter', system-ui, sans-serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+
+    .meta-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 24px;
+      margin: 20px 0 24px;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .meta-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .meta-value, .key-pill {
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .key-pill {
+      display: inline-block;
+      background: var(--accent-soft);
+      padding: 4px 8px;
+      border-radius: 3px;
+      width: fit-content;
+    }
+
+    .scale-display {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-family: 'Courier New', monospace;
+      word-break: break-word;
+    }
+
+    .chart-section {
+      margin-bottom: 32px;
+    }
+
+    .section-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .chords-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .chord-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 50px;
+      padding: 12px 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .chord-card:hover { border-color: var(--accent); background: var(--surface-hover); }
+    .chord-card.chromatic { border-color: #9A88CC; background: rgba(154, 136, 204, 0.08); }
+
+    .chord-number {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .chord-quality {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+      min-height: 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    .chord-original {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .legend {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    .legend-num {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      font-weight: 600;
+      color: var(--accent);
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .no-results {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* ══════════════════════════════════
+       MODAL
+    ══════════════════════════════════ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 300;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.active { display: flex; }
+
+    .modal-content {
+      background: var(--bg-primary);
+      border-radius: 8px;
+      width: 95%;
+      max-width: 1200px;
+      height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover { color: var(--text-primary); }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+    }
+
+    /* ══════════════════════════════════
+       MANAGER STYLES
+    ══════════════════════════════════ */
+    .manager-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      height: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .manager-container { grid-template-columns: 1fr; }
+    }
+
+    .manager-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .manager-card h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 6px;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      background: var(--bg-tertiary);
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-soft);
+    }
+
+    textarea { resize: vertical; min-height: 80px; }
+
+    .btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #249CCC;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(46, 170, 220, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--surface-hover);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .btn-danger {
+      background: #E53935;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #D32F2F;
+    }
+
+    .btn-success {
+      background: #43A047;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #388E3C;
+    }
+
+    .btn-small {
+      padding: 6px 10px;
+      font-size: 0.75rem;
+    }
+
+    .song-item-manager {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .song-item-manager:hover { background: var(--border); border-color: var(--accent); }
+    .song-item-manager.active { border-color: var(--accent); background: var(--accent-soft); }
+
+    .song-item-manager-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .song-item-manager-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .section-item {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-item-title {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .section-item-chords {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chords-input {
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.9rem;
+    }
+
+    .alert-success {
+      background: rgba(67, 160, 71, 0.15);
+      color: #43A047;
+      border: 1px solid rgba(67, 160, 71, 0.3);
+    }
+
+    .alert-danger {
+      background: rgba(229, 57, 53, 0.15);
+      color: #E53935;
+      border: 1px solid rgba(229, 57, 53, 0.3);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state i {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .json-preview {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat-box {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 16px 12px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- BOTÓN PARA REABRIR SIDEBAR -->
+<button id="btn-reopen" onclick="toggleSidebar()" title="Abrir menú">
+  <div class="ham-bar"></div>
+  <div class="ham-bar"></div>
+  <div class="ham-bar"></div>
+</button>
+
+<!-- ══════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════ -->
+<aside id="sidebar">
+  
+  <div class="brand-area">
+    <div class="brand-text">
+      <div class="brand-top">Alabanza</div>
+      <div class="brand-name">Portal</div>
+      <div class="brand-sub">Nashville System</div>
+    </div>
+    <button class="ham-btn" onclick="toggleSidebar()" title="Cerrar menú">
+      <div class="ham-bar"></div>
+      <div class="ham-bar"></div>
+      <div class="ham-bar"></div>
+    </button>
+  </div>
+
+  <div class="search-wrap">
+    <input 
+      type="text" 
+      class="search-input"
+      id="search-input"
+      placeholder="Buscar canción…"
+      oninput="filterSongs(this.value)"
+    >
+  </div>
+
+  <div id="song-list"></div>
+
+</aside>
+
+<!-- ══════════════════════════════════════════
+     MAIN CONTENT
+══════════════════════════════════════════ -->
+<main id="main">
+  
+  <div class="main-header">
+    <div class="main-header-left">
+      <h2 style="margin: 30px; font-size: 1.2rem; font-weight: 600;">Portal de Alabanza</h2>
+    </div>
+    <div class="main-header-right">
+      <button class="header-btn" onclick="toggleTheme()" title="Alternar tema">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-label">Modo oscuro</span>
+      </button>
+      <button class="header-btn primary" onclick="openManager()" title="Gestor de canciones">
+        <i class="fas fa-plus"></i>
+        <span>Gestor</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="content-area">
+    <div id="welcome">
+      <div class="welcome-icon">♪</div>
+      <h1 style="font-family:'Geist', 'Inter', system-ui, sans-serif; font-size:1.6rem; color:var(--accent); font-weight:700; letter-spacing:-0.01em;">
+        Portal de Alabanza
+      </h1>
+      <p style="color:var(--text-secondary); max-width:300px; line-height:1.6; font-size:0.85rem; font-family:'Geist', 'Inter', system-ui, sans-serif;">
+        Selecciona una canción del repertorio para ver su cifrado en el
+        <strong style="color:var(--accent); font-weight:600;">Sistema Numérico Nashville</strong>.
+      </p>
+      <div class="deco-line" style="width:120px; margin-top:8px;"></div>
+      <div style="font-size:0.65rem; color:var(--text-muted); letter-spacing:0.12em; text-transform:uppercase; font-family:'Geist', 'Inter', system-ui, sans-serif; font-weight:500;">
+        <span id="welcome-count"></span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════════════════════════════════════
+     MODAL DEL MANAGER
+══════════════════════════════════════════ -->
+<div id="managerModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Gestor de Canciones</h2>
+      <button class="modal-close" onclick="closeManager()" title="Cerrar">&times;</button>
+    </div>
+    <div class="modal-body" id="managerBody">
+      <!-- El contenido del manager se renderiza aquí -->
+    </div>
+  </div>
+</div>
+
+<script>
+
+// ══════════════════════════════════════════
+//  DATOS INICIALES (desde index.html)
+// ══════════════════════════════════════════
+const INITIAL_SONGS = [
+  {
+    id: 1,
+    title: "A Él sea la Gloria",
+    artist: "Kabed",
+    key: "F",
+    bpm: 100,
+    timeSignature: "4/4",
+    youtubeId: " ",
+    audioFile: "A el sea a gloria - Kabed.mp3",
+    sections: [
+      { 
+        name: "Intro", 
+        chords: ["||:", "Bb", "Bb", "C", "C", ":||"] 
+      },
+      { 
+        name: "A. Verso 1", 
+        chords: ["||:", "Bb' ' '", "F'", "C", "Dm", "Dm",  ":||"] 
+      },
+      { 
+        name: "B. Coro. Luego, repetimos A, B, Puente", 
+        chords: ["||:", "Bb", "C", "F' '", "C' '", "Dm", "Bb", "C", "Dm", "%", ":||"] 
+      },
+      { 
+        name: "Puente", 
+        chords: ["||:" ,"Bb", "C", "Dm", "Dm", ":||"] 
+      }
+    ]
+  },
+  {
+    id: 2,
+    title: "A ti me rindo",
+    artist: "Hillsong Worship",
+    key: "Bb",
+    bpm: 76,
+    timeSignature: "4/4",
+    youtubeId: " ",
+    audioFile: "A ti me rindo - Hillsong.mp3",
+    sections: [
+      { 
+        name: "A. Verso. Antes entra Pad y luego la voz ", 
+        chords: ["||:", "Gm", "Bb", "F", "Eb", ":||", "Gm",  "Bb", "F", "Eb"] 
+      },
+      { 
+        name: "A. Verso ", 
+        chords: ["||:", "Gm", "Bb", "F", "Eb", ":||"] 
+      },
+      { 
+        name: "Pre Coro", 
+        chords: ["||:", "Gm", "Bb", "Cm", "Eb", ":||"] 
+      },
+      { 
+        name: "Interludio", 
+        chords: ["Bb", "F", "Gm", "Cm", "F", "Gm"] 
+      },
+      { 
+        name: "Coro", 
+        chords: ["||:", "Eb", "Bb", "F", "Cm", "Gm", "F", ":||"] 
+      },
+      { 
+        name: "Solo", 
+        chords: ["Eb", "Bb", "F", "Cm", "Gm", "F"] 
+      }
+    ]
+  },
+  {
+  id: 3,
+  title: "Alaba",
+  artist: "Evan Craft & Intimidad Worship",
+  key: "A", 
+  bpm: 127,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: "Alaba - Somos Uno.mp3",
+  sections: [
+    { 
+      name: "Vamp / Intro", 
+      chords: ["A"] 
+    },
+    { 
+      name: "Verso 1 y 2", 
+      chords: ["A", "Bm7", "A", "E/A", "D/A", "A"] 
+    },
+    { 
+      name: "Precoro", 
+      chords: ["E", "D"] 
+    },
+    { 
+      name: "Coro 1 y 2", 
+      chords: ["F#m", "D", "A", "E"] 
+    },
+    { 
+      name: "Inter", 
+      chords: ["A"] 
+    },
+    { 
+      name: "Puente 1", 
+      chords: ["A", "D/A", "E/A", "D/A"] 
+    },
+    { 
+      name: "Coro 3 y 4", 
+      chords: ["F#m", "D", "A", "E"] 
+    },
+    { 
+      name: "Solo", 
+      chords: ["F#m", "D", "A", "E"] 
+    }
+  ]
+  },
+  {
+  id: 4,
+  title: "Eco (Echo)",
+  artist: "Elevation Worship",
+  key: "D",
+  bpm: 104,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: "Eco - Elevation Worship.mp3",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["A", "Bm", "G", "D"] 
+    },
+    { 
+      name: "Verso 1", 
+      chords: ["A", "Bm", "G", "D", "A", "Bm", "G", "D"] 
+    },
+    { 
+      name: "Pre Coro", 
+      chords: ["A", "Bm", "G", "D", "G", "D", "A", "Bm", "A", "Bm", "G", "G"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["A", "Bm", "G", "D"] 
+    },
+    { 
+      name: "Repetir (Post-Coro)", 
+      chords: ["Bm", "G", "D"] 
+    },
+    { 
+      name: "Verso 2", 
+      chords: ["A", "Bm", "G", "D", "A", "Bm", "G", "D"] 
+    },
+    { 
+      name: "Final", 
+      chords: ["D"] // Generalmente termina en la tónica
+    }
+  ]
+},
+{
+  id: 5,
+  title: "A Él sea la Gloria",
+  artist: "Himno", // No especificado en el documento
+  key: "F",
+  bpm: 100,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: "El señor esta en este lugar - centro vida musica.mp3",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["||:", "Bb", "Bb", "C", "C", ":||"] 
+    },
+    { 
+      name: "Verso 1", 
+      chords: ["||:", "Bb' ' ' ", "F'", "C", "Dm", "Dm", ":||"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["||:", "Bb", "C", "F' '", "C' '", "Dm", "Bb", "C", "Dm", "%", ":||"] 
+    },
+    { 
+      name: "Verso 2", 
+      chords: ["Bb", "c", "Dm", "%"] 
+    }
+  ]
+},
+{
+    id: 6,
+    title: "El Shaddai",
+    artist: "Christine D'Clairo",
+    key: "E",
+    bpm: 70,
+    timeSignature: "4/4",
+    youtubeId: " ",
+    audioFile: "El shaddai - Christine D'Clairo.mp3",
+    sections: [
+      { 
+        name: "Intro",  
+        chords: ["||:", "C#m' '", "A' '", "E' '", "Esus4' '", "E2.", ":||"] 
+      },
+      { 
+        name: "A. Verso",  
+        chords: ["C#m", "A", "E1.2.3.", "B4."] 
+      },
+      { 
+        name: "B. Coro",   
+        chords: ["||:", "C#m' '", "B' '", "E", ":||", "F#m", "B"] 
+      },
+      { 
+        name: "Intro. Solo la mitad, volvemos a A. Bx2, Puente",  
+        chords: ["C#m' '", "A' '", "E"] 
+      },
+      { 
+        name: "Puente",   
+        chords: ["A", "B", "C#m", "E"] 
+      },
+      { 
+        name: " ",
+        chords: ["||:" , "A", "B", "C#m", "E1.2.3.", "B'", "A'", "E'", "F#m'", "B", " :||"]
+      },
+      { 
+        name: "B. Coro (x2 intenso y x2 solo piano)",   
+        chords: ["||:", "C#m' '", "B' '", "E", ":||", "F#m", "B"] 
+      },
+      { 
+        name: "Final",   
+        chords: ["||:", "C#m' '", "A' '", "E' '", "Esus4' '", ":||"] 
+      }
+    ]
+  },
+  {
+  id: 7,
+  title: "En Memoria De Ti",
+  artist: "Himno", // No especificado en el documento
+  key: "A",
+  bpm: 72, // Estimado para este estilo de himno/comunión
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: "En memoria de ti - Un corazon.mp3",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["A", "D", "A", "F#m", "F#m", "E", "D", "A"] 
+    },
+    { 
+      name: "Verso 1 y 2", 
+      chords: ["A", "D", "A", "F#m", "F#m", "E", "D", "A"] 
+    },
+    { 
+      name: "Coro 1", 
+      chords: ["F#m", "E/G#", "A", "D", "F#m", "D", "E"] 
+    },
+    { 
+      name: "Verso 3 y 4", 
+      chords: ["A", "D", "A", "F#m", "F#m", "E", "D", "A"] 
+    },
+    { 
+      name: "Instrumental", 
+      chords: ["A", "D", "F#m", "A", "E", "D", "A"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["Bm", "E", "C#m", "D", "A"] 
+    },
+    { 
+      name: "Final", 
+      chords: ["C#m", "D", "A"] 
+    }
+  ]
+},
+{
+    id: 8,
+    title: "Eres fiel",
+    artist: "Israel Houghton",
+    key: "E",
+    bpm: 146,
+    timeSignature: "4/4",
+    youtubeId: "",
+    audioFile: "Eres fiel - Ingrid Rosario.mp3",
+    sections: [
+      { name: "Intro",  
+        chords: ["E", "B", "D", "A"] 
+      },
+      { name: "V1",  
+        chords: ["E", "B", "D", "A"] 
+      },
+      { name: "Pre Coro",   
+        chords: ["A", "B", "G#", "D"] 
+      },
+      { name: "Ch",   
+        chords: ["E", "B", "D", "A", "E", "B", "D", "A", "E", "B", "D", "A"] 
+      },
+      { name: "PUENTE",   
+        chords: ["D", "G#", "A", "E", "D", "A", "A", "D"] 
+      },
+      { name: "SOLO",   
+        chords: ["E", "E", "E", "E", "A", "D", "A"] 
+      }
+    ]
+  },
+  {
+  id: 9,
+  title: "Gracia Sublime Es",
+  artist: "En Espíritu y en Verdad",
+  key: "B",
+  bpm: 101,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: "Gracia Sublime es - En Espíritu y en Verdad.mp3",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["B", "E"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["B", "E", "G#m", "F#", "E"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["B", "E", "G#m", "F#", "F#"] // Incluye casillas 1 y 2
+    },
+    { 
+      name: "Instrumental", 
+      chords: ["B", "E", "B", "E"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["B", "E", "G#m", "E"] 
+    },
+    { 
+      name: "Reprise", 
+      chords: ["B", "E", "G#m", "F#", "B"] 
+    }
+  ]
+},
+{
+  id: 10,
+  title: "Oceans (Oceans)",
+  artist: "Hillsong United",
+  key: "D",
+  bpm: 67,
+  timeSignature: "4/4",
+  youtubeId: "dy9nwe9_xzw",
+  audioFile: "Oceans - Hillsong United.mp3",
+  sections: [
+    {
+      name: "Verso",
+      chords: ["D", "A", "Bm", "G"]
+    },
+    {
+      name: "Pre-Coro",
+      chords: ["Bm", "G", "D", "A"]
+    },
+    {
+      name: "Coro",
+      chords: ["D", "A", "Bm", "G", "D", "A", "G"]
+    },
+    {
+      name: "Puente",
+      chords: ["Bm", "G", "D", "A", "Bm", "G", "A", "D"]
+    }
+  ]
+},
+{
+  id: 11,
+  title: "Peleo de rodillas",
+  artist: "Sarai Rivera",
+  key: "E",
+  bpm: 97,
+  timeSignature: "4/4",
+  youtubeId: "CaCbhfvzo4w",
+  audioFile: "Peleo de rodillas - Sarai Rivera.mp3",
+  sections: [
+    { 
+      name: "Intro",  
+      chords: ["C#m", "A", "E", "G#m"] 
+    },
+    { 
+      name: "Verso",  
+      chords: ["||:", "C#m", "A", "E", "G#m", ":||"] 
+    },
+    { 
+      name: "Pre Coro",  
+      chords: ["||:", "A", "C#m", ":||", "A", "C#m", "E' '",  "B' '"] 
+    },
+    { 
+      name: "Coro. Luego repetimos todo y vamos al Puente",   
+      chords: ["||:", "C#m", "E", "A' '", "C#m' '", "B", ":||"] 
+    },
+    { 
+      name: "Puente",   
+      chords: ["F#m", "A", "C#m", "B"] 
+    },
+    { 
+      name: "Coro y Final",   
+      chords: ["E"] 
+    }
+  ]
+},
+{
+  id: 12 ,
+  title: "Agnus Dei",
+  artist: "Michael W. Smith", // Basado en la versión más conocida de esta canción
+  key: "Bb",
+  bpm: 68, // Tempo sugerido para este tema
+  timeSignature: "4/4",
+  youtubeId: "vBfMshfP300",
+  audioFile: "Agnus Dei - Michael W. Smith.mp3",
+  sections: [
+    { 
+      name: "Verso 1", 
+      chords: ["Bbsus2", "Eb", "Eb/G"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["Bbsus2", "Gm", "F", "Eb/G"] 
+    },
+    { 
+      name: "Verso 2", 
+      chords: ["Bbsus2", "Eb", "Bbsus2"] 
+    },
+    { 
+      name: "Coro 2", 
+      chords: ["F", "Bbsus2", "Eb/G", "Gm"] 
+    }
+  ]
+},
+{
+  id: 13,
+  title: "AMOR SIN COMPARACIÓN",
+  artist: "Hillsong",
+  key: "G", 
+  bpm: "74", // Tempo estándar para esta versión de Hillsong
+  timeSignature: "4/4",
+  youtubeId: "vBfMshfP300", // ID sugerido para la versión en español
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["Em", "G"] 
+    },
+    { 
+      name: "Verso 1", 
+      chords: ["Em", "G", "D"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["G", "D", "Em", "C"] 
+    },
+    { 
+      name: "Verso 2", 
+      chords: ["Em", "G", "D"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["G", "D", "Em", "C"] 
+    }
+  ]
+},
+{
+  id: 14, // Mantengo el ID del ejemplo anterior o puedes actualizarlo según tu base de datos
+  title: "Aquí estamos para ti", 
+  artist: "Planetshakers", // Artista original de la obra (el PDF indica "Aquí estamos para ti" como título/autor [cite: 106, 107])
+  key: "C", 
+  bpm: "85", 
+  timeSignature: "4/4", 
+  youtubeId: " ", 
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["C", "F"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["F", "C"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["F", "G", "C/E", "F", "Dm", "G/B", "C/E"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["G", "C/E", "Am", "F"] 
+    },
+    { 
+      name: "Final", 
+      chords: ["C"] 
+    }
+  ]
+},
+{
+  id: 15,
+  title: "Bautizados en fuego",
+  artist: " ", // El documento no especifica un artista, solo el título 
+  key: "Bm",
+  bpm: 140,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["G", "A", "Bm"] // Basado en el Riff de Guitarra inicial [cite: 151, 152, 154]
+    },
+    { 
+      name: "Verso A", 
+      chords: ["Bm", "D", "Em", "D", "A/C#"] // Sección marcada como Verso A [cite: 155, 156, 157, 158, 160]
+    },
+    { 
+      name: "Coro B", 
+      chords: ["D", "F#m", "Bm", "G"] // Progresión de la sección Coro [cite: 164, 165, 166, 167, 168]
+    },
+    { 
+      name: "Verso C", 
+      chords: ["G", "A", "Bm", "A/C#"] // Variación del verso identificada como C [cite: 169, 171, 172, 173, 174]
+    },
+    { 
+      name: "Puente/Solo", 
+      chords: ["G", "A", "D"] // Sección de Guitar Solo [cite: 178, 176, 179, 181]
+    },
+    { 
+      name: "Final", 
+      chords: ["G"] // Acorde final de la canción [cite: 180]
+    }
+  ]
+},
+{
+  id: 16,
+  title: "Cielos abiertos",
+  artist: "New Wine",
+  key: "C",
+  bpm: 70, // No especificado en el documento
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["C", "Am", "F", "C"] 
+    },
+    { 
+      name: "Verso 1", 
+      chords: ["C", "Am", "F", "C"] 
+    },
+    { 
+      name: "Verso 2", 
+      chords: ["C", "Am", "F", "C"] 
+    },
+    { 
+      name: "Segundo Puente", 
+      chords: ["F", "Am", "G"] 
+    },
+    { 
+      name: "Coro / Estribillo", 
+      chords: ["C", "Am", "F", "C"] 
+    }
+  ]
+},
+{
+  id: 17,
+  title: "Coritos (Medley)",
+  artist: "Israel Houghton",
+  key: "C",
+  bpm: "112",
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["C"] // Riff de guitarra y piano en la tónica [cite: 238, 240]
+    },
+    { 
+      name: "A. Verso (Con mis manos...)", 
+      chords: ["C", "F", "G"] 
+    },
+    { 
+      name: "B. Coro (Porque tú has sido...)", 
+      chords: ["F", "Em7", "Eb", "Dm7", "G7"] 
+    },
+    { 
+      name: "C. Alabaré, alabaré...", 
+      chords: ["C", "Em7", "G7"] 
+    },
+    { 
+      name: "D. Te alabarán oh Jehová...", 
+      chords: ["C", "G", "F", "Dm"] 
+    },
+    { 
+      name: "E. Hay poder, poder / Hay amor...", 
+      chords: ["C", "F", "G"] 
+    },
+    { 
+      name: "F. Quién como tú Jehová", 
+      chords: ["G", "Dm7", "C"] 
+    },
+    { 
+      name: "G. Ven, ven, espíritu divino. Sube a D", 
+      chords: ["||:","D", "%", "A", "%", ":||"] 
+    },
+    { 
+      name: "H. Apoderate, apoderate. Seguimos en D", 
+      chords: ["||:","D", "%", "A", "%", ":||"] 
+    }
+  ]
+},
+{
+  id: 18,
+  title: "Danzando",
+  artist: "Christine D' Clario",
+  key: "Bm",
+  bpm: "128", // Tempo estándar para esta canción
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["Bm", "G", "D", "A"] 
+    },
+    { 
+      name: "Primera Parte", 
+      chords: ["Bm", "G", "D", "A"] 
+    },
+    { 
+      name: "Pre-Coro", 
+      chords: ["G", "F#7"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["Bm", "G", "D", "A", "F#7"] 
+    }
+  ]
+},
+{
+  id: 19,
+  title: "Declaro el nombre de Jesús",
+  artist: "Lakewood",
+  key: "A",
+  bpm: 70, // No especificado en el documento
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["A"] 
+    },
+    { 
+      name: "Verso 1", 
+      chords: ["A", "Asus4", "F#m", "D"] 
+    },
+    { 
+      name: "Verso 2", 
+      chords: ["A", "Asus4", "F#m", "D"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["E", "D", "A"] 
+    },
+    { 
+      name: "Verso 3", 
+      chords: ["A", "Asus4", "F#m", "D"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["A", "F#m", "D", "A"] 
+    },
+    { 
+      name: "Final", 
+      chords: ["A"] 
+    }
+  ]
+},
+{
+  id: 20,
+  title: "Derramo el perfume", 
+  artist: "Montesanto", 
+  key: "Gm", 
+  bpm: 70, 
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["Gm", "F/A", "Bb"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["Gm", "F/A", "Bb", "Bb/D", "Eb", "F"] 
+    },
+    { 
+      name: "Pre-Coro", 
+      chords: ["Cm", "Eb", "Gm", "Bb", "F"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["Bb", "F/A", "Gm", "Eb"] 
+    }
+  ]
+},
+{
+  id: 21,
+  title: "Deseo eterno",
+  artist: "Marcos Brunet",
+  key: "E",
+  bpm: 63,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["A/C#", "B/D#"] 
+    },
+    { 
+      name: "Estrofa", 
+      chords: ["A", "B", "C#m", "B/D#", "E", "F#m"] 
+    },
+    { 
+      name: "Estribillo", 
+      chords: ["F#m", "A", "E", "G#m"] 
+    },
+    { 
+      name: "Puente (A)", 
+      chords: ["A", "B", "C#m", "G#m", "F#m", "E"] 
+    },
+    { 
+      name: "Puente (B)", 
+      chords: ["A", "B", "C#m", "G#m", "F#m", "E"] 
+    },
+    { 
+      name: "Armonización Final", 
+      chords: ["A", "B/A"] 
+    }
+  ]
+},
+{
+  id: 22,
+  title: "Digno",
+  artist: "Elevation Worship",
+  key: "D",
+  bpm: 70, 
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["Bm", "G", "D", "A"] 
+    },
+    { 
+      name: "Verso I", 
+      chords: ["D", "Asus", "A", "G", "D/F#"] 
+    },
+    { 
+      name: "Coro I", 
+      chords: ["G", "D/F#", "A", "Bm"] 
+    },
+    { 
+      name: "Verso II", 
+      chords: ["D", "Asus", "A", "G", "D/F#", "Bm"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["G", "A", "Bm", "D/F#"] 
+    }
+  ]
+},
+{
+  id: 23,
+  title: "Digno eres tú",
+  artist: "Bethel Music", 
+  key: "D",
+  bpm: 68,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["D", "Dsus4", "A", "G"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["G", "D", "Dsus4", "A", "D/F#"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["A", "D", "Gmaj7"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["D", "F#m", "G", "A"] 
+    }
+  ]
+},
+{
+  id: 24,
+  title: "Dios de lo imposible",
+  artist: "Marco Barrientos",
+  key: "C",
+  bpm: 70, // No especificado en el documento
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["C", "G", "Am", "F"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["C", "G", "Am", "F"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["F", "C", "G", "Am"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["Am", "F", "C", "G"] 
+    }
+  ]
+},
+{
+  id: 25,
+  title: "Dios de maravillas",
+  artist: "Christine D'Clario",
+  key: "D",
+  bpm: "75", 
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["D", "Bm7", "Gsus2", "A"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["D", "Bm7", "Gsus2", "A"] 
+    },
+    { 
+      name: "Precoro", 
+      chords: ["G", "Em7", "Bm7", "A"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["D", "A", "Bm7", "Gsus2"] 
+    },
+    { 
+      name: "Puente I", 
+      chords: ["G", "Em7", "Bm7", "Asus4"] 
+    },
+    { 
+      name: "Puente II", 
+      chords: ["G", "A", "Bm7", "D", "F#m7", "Gsus2", "Asus4"] 
+    }
+  ]
+},
+{
+  id: 26, 
+  title: "Dios Incomparable",
+  artist: "Generación 12 & Marcela Gándara",
+  key: "B",
+  bpm: "78",
+  timeSignature: "4/4",
+  youtubeId: " ", // ID sugerido: 4yN7hUjW-Uo
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["B", "F#/A#", "G#m", "E", "Asus2"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["B", "F#/A#", "G#m", "E", "Asus2"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["B", "F#/A#", "G#m", "E", "G#m", "E"] 
+    },
+    { 
+      name: "Solo", 
+      chords: ["E", "F#/A#", "G#m", "E"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["F#/A#", "G#m", "E", "B"] 
+    }
+  ]
+},
+{
+  id: 27,
+  title: "El gran yo soy",
+  artist: "Julissa",
+  key: "G",
+  bpm: "76", // Tempo aproximado para esta versión
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["G", "Cmaj7", "Em7", "G/C"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["G", "Am", "D/F#", "Em7", "Cmaj7"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["G", "Am", "D/F#", "Em7", "C", "D7"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["Em", "C", "G", "D7"] 
+    },
+    { 
+      name: "Outro", 
+      chords: ["D7", "Em", "C", "G"] 
+    }
+  ]
+},
+{
+  id: 28,
+  title: "El Poder de tu Amor (Medley)",
+  artist: "Ingrid Rosario",
+  key: "G",
+  bpm: "70",
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["G", "Em", "D", "C", "Am7", "D"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["G", "D/F#", "Em7", "Bm7", "C", "D", "G", "D"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["C", "D", "G", "D/F#", "Em7", "D", "C", "Am", "D", "G"] 
+    },
+    { 
+      name: "Canta al Señor", 
+      chords: ["G", "Em", "C", "D", "G", "Em", "C", "D", "B", "Em", "D", "C", "D"] 
+    },
+    { 
+      name: "Cuan Grande es Él", 
+      chords: ["G", "C", "G", "Em", "Am", "D", "G"] 
+    }
+  ]
+},
+{
+  id: 29,
+  title: "El rostro de mi amado",
+  artist: "Montesanto ft. Belen Losa", // No se especifica el artista en el documento
+  key: "Bbm",
+  bpm: "85", // No especificado en el documento
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["C", "F", "Am", "G", "F"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["Gb", "Ab", "Bbm", "Fm"] 
+    },
+    { 
+      name: "Pre Coro", 
+      chords: ["Ebm", "Db", "Bbm", "Ab"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["Gb", "Ab", "F7", "Bbm", "Ab"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["Db", "Eb7", "Bbm7", "Ab", "Gb"] 
+    }
+  ]
+},
+{
+  id: 30,
+  title: "En El Trono Está",
+  artist: "Christine D'Clario",
+  key: "A",
+  bpm: 150,
+  timeSignature: "4/4",
+  youtubeId: " ", 
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["D", "F#m", "A", "E"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["F#m", "D", "A", "E"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["D", "A", "E", "F#m"] 
+    },
+    { 
+      name: "Intro II", 
+      chords: ["F#m", "D", "A"] 
+    },
+    { 
+      name: "Coro Final", 
+      chords: ["D", "A", "F#m", "E"] 
+    }
+  ]
+},
+{
+  id: 31,
+  title: "En Espíritu Y Verdad",
+  artist: "En Espíritu y Verdad",
+  key: "A",
+  bpm: 70, // No especificado en el documento
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["A", "D", "F#m", "D"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["A", "F#m", "D"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["A", "D", "F#m", "D"] 
+    },
+    { 
+      name: "Verso 2", 
+      chords: ["C#m", "A", "E", "G#m"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["F#m", "A", "C#m", "B"] 
+    }
+  ]
+},
+{
+  id: 32,
+  title: "En Memoria De Ti",
+  artist: "Un corazón", // El documento no especifica el artista (comúnmente interpretada por Brooke Ligertwood / Hillsong)
+  key: "A",
+  bpm: 70, // No especificado en el documento
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["A", "D", "A", "F#m", "E", "D", "A"] 
+    },
+    { 
+      name: "Verse 1", 
+      chords: ["A", "D", "A", "F#m", "E", "D", "A"] 
+    },
+    { 
+      name: "Verse 2", 
+      chords: ["A", "D", "A", "F#m", "E", "D", "A"] 
+    },
+    { 
+      name: "CORO 1", 
+      chords: ["F#m", "E/G#", "A", "D", "E"] 
+    },
+    { 
+      name: "Verse 3", 
+      chords: ["A", "D", "A", "F#m", "E", "D", "A"] 
+    }
+  ]
+},
+{
+  id: 33,
+  title: "Eres mi respirar",
+  artist: "Ingrid Rosario", // No especificado en el documento (comúnmente atribuida a Michael W. Smith / Ingrid Rosario)
+  key: "G",
+  bpm: 128,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["G", "C"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["G", "C", "G", "D", "Em", "D", "C", "Em", "D"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["G", "D", "Em", "D", "C", "Em", "D"] 
+    },
+    { 
+      name: "Instrumental", 
+      chords: ["Em", "C", "G", "D"] 
+    },
+    { 
+      name: "Final", 
+      chords: ["G"] 
+    }
+  ]
+},
+{
+  id: 34,
+  title: "Fiesta en el desierto",
+  artist: "Montesanto",
+  key: "C#m",
+  bpm: 140,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["C#m"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["C#m", "A", "B", "G#"] 
+    },
+    { 
+      name: "Coro 1", 
+      chords: ["A", "B", "G#", "C#m"] 
+    },
+    { 
+      name: "Instrumental", 
+      chords: ["A", "B", "G#", "E"] 
+    },
+    { 
+      name: "Coro 2", 
+      chords: ["A", "B", "G#", "C#m"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["E", "B", "G#", "C#m", "A", "B", "G#"] 
+    }
+  ]
+},
+{
+  id: 35,
+  title: "GRANDE Y FUERTE",
+  artist: "Miel San Marcos",
+  key: "Am",
+  bpm: 150,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["Am7", "F", "G"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["Am7", "F", "G"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["Dm7", "G", "Am7", "F", "G/B", "A/C#"] 
+    },
+    { 
+      name: "Main Riff (Full Band)", 
+      chords: ["Am7", "F", "G"] 
+    },
+    { 
+      name: "Ending", 
+      chords: ["Am7", "G", "F", "E", "E7#9"] 
+    }
+  ]
+},
+{
+  id: 36,
+  title: "Hay libertad",
+  artist: "Art Aguilera",
+  key: "Dm",
+  bpm: 148,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["Dm7", "Bb", "F", "C"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["Dm7", "Bb", "F", "C", "C/E"] 
+    },
+    { 
+      name: "Chorus", 
+      chords: ["Dm7", "Bb", "F", "C"] 
+    },
+    { 
+      name: "Instrumental", 
+      chords: ["Dm7", "C/E", "F", "Bb", "F", "C"] 
+    },
+    { 
+      name: "Bridge", 
+      chords: ["Dm7", "C/E", "F", "Bb", "C"] 
+    }
+  ]
+},
+{
+  id: 37,
+  title: "Hermoso Nombre",
+  artist: "Hillsong En Español",
+  key: "D",
+  bpm: 68,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["D(sus2)"] 
+    },
+    { 
+      name: "Verso 1", 
+      chords: ["D(sus2)"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["D", "A", "Bm", "G", "D/F#"] 
+    },
+    { 
+      name: "Verso 2", 
+      chords: ["D", "G", "Bm", "A", "A/C#"] 
+    },
+    { 
+      name: "Instrumental", 
+      chords: ["G", "A", "Bm", "D/F#"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["G", "A", "Bm", "A", "D/F#"] 
+    }
+  ]
+},
+{
+  id: 38,
+  title: "Incomprensible Amor",
+  artist: "New Wine",
+  key: "B",
+  bpm: 70, // No especificado en el documento
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["G#m", "E", "B", "F#"] 
+    },
+    { 
+      name: "Verso 1", 
+      chords: ["G#m", "E", "B", "F#"] 
+    },
+    { 
+      name: "Verso 2", 
+      chords: ["G#m", "E", "B", "F#"] 
+    },
+    { 
+      name: "Pre-coro", 
+      chords: ["G#m", "E", "B", "F#"] 
+    },
+    { 
+      name: "Pre-coro 2", 
+      chords: ["E", "B", "F#", "G#m"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["G#m", "E", "B", "F#"] 
+    }
+  ]
+},
+{
+  id: 39,
+  title: "Inúndanos de tu gloria",
+  artist: " ", // No especificado en el documento
+  key: "D",
+  bpm: 140,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["D", "A", "Bm", "G"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["D", "Bm", "G", "A"] 
+    },
+    { 
+      name: "Pre Coro", 
+      chords: ["G", "D", "Bm", "A"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["D", "A", "Bm", "G"] 
+    },
+    { 
+      name: "Instrumental", 
+      chords: ["D", "A", "Bm", "G"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["D", "A", "Bm", "G"] 
+    }
+  ]
+},
+{
+  id: 40,
+  title: "La Bendición",
+  artist: "Elevation Worship / Kari Jobe",
+  key: "B",
+  bpm: 70,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["B", "E", "B/D#", "F#"] 
+    },
+    { 
+      name: "Primera Parte", 
+      chords: ["B", "E", "B/D#", "G#m7", "F#"] 
+    },
+    { 
+      name: "Estribillo (Amén)", 
+      chords: ["G#m7", "E", "B", "F#"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["G#m7", "E", "B", "F#"] 
+    }
+  ]
+},
+{
+  id: 41,
+  title: "La bondad de Dios",
+  artist: "Bethel Music / Jenn Johnson",
+  key: "G",
+  bpm: 68,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["G", "C/G"] 
+    },
+    { 
+      name: "Estrofa", 
+      chords: ["G", "C", "D", "Em"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["G", "C", "D", "Em"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["G/B", "C", "D", "G", "Em"] 
+    }
+  ]
+},
+{
+  id: 42,
+  title: "Levanto un Aleluya",
+  artist: "Patty Gleason / Bethel Music",
+  key: "C",
+  bpm: 82,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["C"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["C", "F", "Am", "G"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["F", "C", "Am", "G"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["C", "F", "Am", "G"] 
+    },
+    { 
+      name: "Final", 
+      chords: ["Am", "G", "C", "F"] 
+    }
+  ]
+},
+{
+  id: 43,
+  title: "Libre",
+  artist: "Miel San Marcos",
+  key: "Am",
+  bpm: 78,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["Am", "F", "C", "G/B"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["Am", "F", "C", "G/B"] 
+    },
+    { 
+      name: "Precoro", 
+      chords: ["F", "G", "Am", "G/B"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["C", "G", "Am", "F"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["Am", "F", "C", "G"] 
+    },
+    { 
+      name: "Outro", 
+      chords: ["F", "G", "Am"] 
+    }
+  ]
+},
+{
+  id: 44,
+  title: "Lo único que quiero",
+  artist: "Marco Barrientos / Marcela Gándara",
+  key: "F",
+  bpm: 70, // No especificado claramente en el documento
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Verso", 
+      chords: ["Dm", "Csus", "F", "F/Bb"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["Dm", "Csus", "C#dim", "C/F", "F", "F/A", "Bbadd9"] 
+    },
+    { 
+      name: "Interlude", 
+      chords: ["Dm", "Csus", "F", "F#dim/A", "Bbadd9"] 
+    }
+  ]
+},
+{
+  id: 45,
+  title: "Me Rindo",
+  artist: "Karen Espinosa & Christine D'Clario",
+  key: "F",
+  bpm: 72,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["F", "Bb", "C"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["C", "Bb", "Fm", "C"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["Dm", "C", "Bb", "Fsus4", "F"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["F", "Bb", "C"] 
+    }
+  ]
+},
+{
+  id: 46,
+  title: "Milagroso",
+  artist: "Lilly Goodman - Gateway Worship", // No especificado (comúnmente Way Maker de Sinach/Priscilla Bueno)
+  key: "G",
+  bpm: 70, // No especificado en el documento
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["C", "G", "D", "Em"] 
+    },
+    { 
+      name: "Versos", 
+      chords: ["C", "G", "D", "Em"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["C", "G", "D", "Em"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["C", "G", "D", "Em"] 
+    }
+  ]
+},
+{
+  id: 47,
+  title: "No Hay Otro Nombre",
+  artist: "Hillsong Worship",
+  key: "C",
+  bpm: 75,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Estrofa", 
+      chords: ["C", "G/B", "Am", "F", "Dm", "C/E"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["C", "Am", "F", "Em", "G"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["F", "G", "Am", "C/E"] 
+    }
+  ]
+},
+{
+  id: 48,
+  title: "Pablo & Silas",
+  artist: "New Wine", // No especificado en el documento
+  key: "Bb",
+  bpm: 146,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["Eb", "F", "Bb"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["Eb", "F", "Gm", "Bb"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["Eb", "F", "Gm"] 
+    }
+  ]
+},
+{
+  id: 49,
+  title: "Perfume a tus pies",
+  artist: "Marcela Gándara",
+  key: "E",
+  bpm: 66,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["E", "B/E", "C#m", "A"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["E", "B/E", "C#m", "A", "B"] 
+    },
+    { 
+      name: "Pre-coro", 
+      chords: ["C#m", "G#m", "A", "B"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["E", "B/D#", "C#m", "A", "B"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["C#m", "G#m", "F#m", "A"] 
+    }
+  ]
+},
+{
+  id: 50,
+  title: "Por siempre",
+  artist: "En Espíritu y En Verdad",
+  key: "Ab",
+  bpm: 70,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { name: "Intro", 
+      chords: ["Ab", "Eb", "Fm", "Db"] 
+    },
+    { name: "Verso 1", 
+      chords: ["Ab", "Eb", "Fm", "Db"] 
+    },
+    { name: "Verso 2", 
+      chords: ["Ab", "Eb", "Fm", "Db", "Bbm7"] 
+    },
+    { name: "Precoro", 
+      chords: ["Ab", "Eb", "Fm", "Db"] 
+    },
+    { name: "Coro", 
+     chords: ["Ab", "Eb", "Fm", "Db"] 
+    },
+    { name: "Puente", 
+      chords: ["Ab", "Eb", "Bbm7", "Db"] 
+    }
+  ]
+},
+{
+  id: 51,
+  title: "Que se abra el cielo",
+  artist: "Christine D'Clario & Marcos Brunet",
+  key: "A",
+  bpm: 70,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { name: "Intro", 
+      chords: ["F#m7", "A", "E"] 
+    },
+    { name: "Espíritu Avívanos",
+      chords: ["D", "E", "F#m7"]
+   },
+    { name: "Coro",
+      chords: ["A", "E", "F#m7", "D", "Asus2"] 
+    },
+    { name: "Puente",
+     chords: ["F#m7", "D", "A", "E4"] 
+    },
+    { name: "Final",
+      chords: ["A", "A/B", "F#m7", "E"] 
+    }
+  ]
+},
+{
+  id: 52,
+  title: "Quién dices que soy",
+  artist: "Hillsong",
+  key: "G (Original F#)",
+  bpm: 70,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { name: "Primera Parte",
+     chords: ["G", "Em", "D", "C"] 
+    }, // Basado en grados 1, 6, 5, 4
+    { name: "Estribillo",
+      chords: ["G", "D", "Em", "C"] 
+    },
+    { name: "Segunda Parte",
+      chords: ["G", "Em", "D", "C"] 
+    },
+    { name: "Puente",
+      chords: ["G", "D", "Em", "C"] 
+    },
+    { name: "Interludio",
+      chords: ["Em", "D", "G", "C"] }
+  ]
+},
+{
+  id: 53,
+  title: "Quiero conocer a Jesús",
+  artist: "GDS Band",
+  key: "E",
+  bpm: 70, // No especificado en el documento
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["E"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["A", "B", "C#m", "B"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["A", "B", "C#m", "B"] 
+    },
+    { 
+      name: "Punteo", 
+      chords: ["A", "B", "C#m", "B"] 
+    },
+    { 
+      name: "Puente 1 (Yeshua)", 
+      chords: ["A", "B", "C#m", "B"] 
+    },
+    { 
+      name: "Puente 2 (Mi amado es...)", 
+      chords: ["A", "B", "C#m", "B"] 
+    }
+  ]
+},
+{
+  id: 54,
+  title: "Resucítame",
+  artist: "Aline Barros",
+  key: "D (Modula a E)",
+  bpm: 67,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { name: "Intro",
+     chords: ["C", "G/B", "D", "Gm/Bb", "D/A", "A"] 
+    },
+    { name: "Verso",
+     chords: ["D", "A", "G", "Bm", "D/F#"] 
+    },
+    { name: "Pre Coro",
+     chords: ["Em", "B/D#", "Bm/D", "A/C#", "G"] 
+    },
+    { name: "Coro",
+     chords: ["D", "A/C#", "Bm", "A", "G", "D/F#", "Em", "G/D"] 
+    },
+    { name: "Puente",
+     chords: ["D", "A", "Bm", "G", "D/F#"] 
+    },
+    { name: "Final",
+     chords: ["B", "E/B", "A/C#", "Am/C", "E"] 
+    }
+  ]
+},
+{
+  id: 55,
+  title: "Santo",
+  artist: "Ingrid Rosario",
+  key: "D",
+  bpm: 170,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Verso", 
+      chords: ["G", "D", "Bm", "Em", "A"] 
+    },
+    { 
+      name: "Pre Coro", 
+      chords: ["D", "A", "Bm", "G"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["G", "D", "F#m", "Bm", "A"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["G", "A", "Bm", "F#m"] 
+    }
+  ]
+},
+{
+  id: 56,
+  title: "Santo es el que vive",
+  artist: "Montesanto",
+  key: "Db",
+  bpm: 68,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["Bbm", "Gb", "Db", "Ab"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["Bbm", "Gb", "Db", "Ab"] 
+    },
+    { 
+      name: "Pre Coro", 
+      chords: ["Gb", "Ab", "Bbm", "Ab/C"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["Db", "Ab", "Bbm", "Gb"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["Gb", "Ab", "Bbm", "Fm"] 
+    }
+  ]
+},
+{
+  id: 57,
+  title: "Supe que me amabas",
+  artist: "Marcela Gándara",
+  key: "Ab",
+  bpm: 64,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["Ab", "Db", "Ab", "Db"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["Ab", "Db", "Eb", "Fm", "Db", "Bbm", "Eb"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["Ab", "Eb/G", "Fm", "Eb", "Db", "Ab/C", "Bbm", "Eb"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["Fm", "Eb", "Db", "Ab/C", "Bbm", "Ab", "Eb"] 
+    },
+    { 
+      name: "Final", 
+      chords: ["Db", "Ab/C", "Bbm", "Eb", "Ab"] 
+    }
+  ]
+},
+{
+  id: 58,
+  title: "Te doy gloria",
+  artist: "En Espíritu y en Verdad",
+  key: "C",
+  bpm: 148,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["C", "G", "Am", "F"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["C", "G", "Am", "F"] 
+    },
+    { 
+      name: "Pre Coro", 
+      chords: ["F", "G", "F", "G"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["C", "G", "Am", "F"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["C", "G", "Am", "F"] 
+    }
+  ]
+},
+{
+  id: 59,
+  title: "Todo lo haces nuevo",
+  artist: "Generación 12 Ft. Christine D'Clario",
+  key: "E",
+  bpm: 72,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["E", "A/E", "E", "A/E"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["E", "A/E", "C#m", "A"] 
+    },
+    { 
+      name: "Pre Coro", 
+      chords: ["F#m", "E/G#", "A", "B"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["E", "B", "C#m", "A"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["A", "B", "C#m", "E/G#"] 
+    },
+    { 
+      name: "Outro", 
+      chords: ["E", "A", "E", "A"] 
+    }
+  ]
+},
+{
+  id: 60,
+  title: "Tu eres Rey",
+  artist: "Barak",
+  key: "E",
+  bpm: 68,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["C#m", "A", "E", "B/D#"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["C#m", "A", "E", "B/D#"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["C#m", "A", "E", "B/D#"] 
+    },
+    { 
+      name: "Puente (Hoy perfumamos tu trono)", 
+      chords: ["C#m", "A", "E", "B/D#"] 
+    },
+    { 
+      name: "Intermedio II (Por los siglos)", 
+      chords: ["C#m", "A", "E", "B/D#"] 
+    }
+  ]
+},
+{
+  id: 61,
+  title: "Tumbas a jardines",
+  artist: "Elevation Worship",
+  key: "B", // Nota: El PDF indica tocar en G con Capo en el 4to traste o tonalidad real de B
+  bpm: 70,
+  timeSignature: "6/8",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["B", "E/B", "B", "E/B"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["B", "E/B", "B", "G#m", "E", "B"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["B", "E", "B", "G#m", "F#", "E", "B"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["B", "E/B", "B", "E/B", "G#m", "E", "B"] 
+    }
+  ]
+},
+{
+  id: 62,
+  title: "Vasijas rotas",
+  artist: "Hillsong Worship",
+  key: "G",
+  bpm: 70, // No especificado en el documento
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["Em", "G"] 
+    },
+    { 
+      name: "Estrofa", 
+      chords: ["Em", "G", "D"] 
+    },
+    { 
+      name: "Pre-coro", 
+      chords: ["C", "D", "Em", "G"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["G", "D", "Em", "C"] 
+    },
+    { 
+      name: "Interludio", 
+      chords: ["G", "D", "Em", "C"] 
+    }
+  ]
+},
+{
+  id: 63,
+  title: "Vamos a cantar",
+  artist: "En Espíritu y en Verdad",
+  key: "E",
+  bpm: 70, // No especificado en el documento
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["E5"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["E", "A", "C#m", "B"] 
+    },
+    { 
+      name: "Verso 1", 
+      chords: ["E", "A", "C#m", "B"] 
+    },
+    { 
+      name: "Verso 2", 
+      chords: ["E", "A", "C#m", "B"] 
+    },
+    { 
+      name: "Intermedio", 
+      chords: ["E", "D4/C#"] 
+    }
+  ]
+},
+{
+  id: 64,
+  title: "Vine a adorarte",
+  artist: "Marcela Gándara",
+  key: "D",
+  bpm: 73,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["D", "A", "Em", "G"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["D", "A", "Em", "G"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["D", "A", "D/F#", "G"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["A", "D/F#", "G"] 
+    }
+  ]
+},
+{
+  id: 65,
+  title: "Ya no soy esclavo",
+  artist: "Julio Melgar",
+  key: "A",
+  bpm: 74,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Verso", 
+      chords: ["A", "Amaj7", "F#m", "E", "A"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["D", "E", "A", "F#m", "E", "A"] 
+    },
+    { 
+      name: "Puente 1 (Brazos del Padre)", 
+      chords: ["F#m", "E", "A", "D"] 
+    },
+    { 
+      name: "Puente 2 (Abriste el mar)", 
+      chords: ["F#m", "E", "A", "D"] 
+    }
+  ]
+},
+{
+  id: 66,
+  title: "Yahweh",
+  artist: "Christine D'Clario",
+  key: "C",
+  bpm: 140,
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Intro", 
+      chords: ["C", "Am", "Em", "F"] 
+    },
+    { 
+      name: "Verso", 
+      chords: ["Am", "C", "F"] 
+    },
+    { 
+      name: "Pre Coro", 
+      chords: ["Am", "C", "F", "Am", "Em", "F"] 
+    },
+    { 
+      name: "Coro", 
+      chords: ["C", "Am", "Em", "F"] 
+    },
+    { 
+      name: "Puente", 
+      chords: ["F", "G", "Am", "G/B"] 
+    }
+  ]
+},
+{
+  id: 67,
+  title: "Yahweh se manifestará",
+  artist: "Oasis Ministry",
+  key: "Em",
+  bpm: 70, // No especificado en el documento
+  timeSignature: "4/4",
+  youtubeId: " ",
+  audioFile: " ",
+  sections: [
+    { 
+      name: "Verso", 
+      chords: ["Em7", "Bm", "C", "D"] 
+    },
+    { 
+      name: "Coro (Nombres de Dios)", 
+      chords: ["C", "D", "Bm", "Em7"] 
+    },
+    { 
+      name: "Puente 1 (Si le adoras...)", 
+      chords: ["Em7", "D", "C", "Bm"] 
+    },
+    { 
+      name: "Puente 2 (Yahweh se manifestará)", 
+      chords: ["Em7", "D", "C", "Bm"] 
+    }
+  ]
+},
+{
+    "id": 68,
+    "title": "He decidido seguir a cristo",
+    "artist": "Himno",
+    "key": "C",
+    "bpm": 150,
+    "timeSignature": "4/4",
+    "youtubeId": "",
+    "audioFile": "",
+    "sections": [
+      {
+        "name": "Intro",
+        "chords": [
+          "''", "C", "C7", "F", "C''", "Em7''", "Am", "C", "C''", "G''", "C"
+        ]
+      },
+      {
+        "name": "Coro",
+        "chords": [
+          "||:", "''", "C", "C7", "F", "C''", "Em7''", "Am", "C", "C''", "G''", "C", ":||"
+        ]
+      },
+      {
+        "name": "Final",
+        "chords": [
+          "''", "C", "C7", "F", "C''", "Em7''", "Am", "C", "C''", "G''", "C"
+        ]
+      }
+    ]
+  },
+  {
+    "id": 69,
+    "title": "Yo me rindo a Él",
+    "artist": "Jesus Adrian Romero",
+    "key": "E",
+    "bpm": 130,
+    "timeSignature": "4/4",
+    "youtubeId": "",
+    "audioFile": "",
+    "sections": [
+      {
+        "name": "Intro",
+        "chords": [
+          "||:", "E", "Am", "E", "Am", ":||"
+        ]
+      },
+      {
+        "name": "Verso",
+        "chords": [
+          "E", "B'''", "Cdis'", "C#m''", "F#m''", "B''", "E''", "E",
+          "E", "B'", "C#m''", "F#m''", "B''", "E", "E''", "Am''"
+        ]
+      },
+      {
+        "name": "Coro",
+        "chords": [
+          "E", "F#m", "B", "E''", "A''", "E", "F#m", "E''", "A''", "B"
+        ]
+      },
+      {
+        "name": "Repetimos todo desde la Intro",
+        "chords": []
+      },
+      {
+        "name": "Final: Coro dos veces y a merced del director",
+        "chords": []
+      }
+    ]
+  }
+];
+
+// ══════════════════════════════════════════
+//  GESTIÓN DE DATOS CON LOCALSTORAGE
+// ══════════════════════════════════════════
+let SONGS = [];
+
+function loadSongsFromStorage() {
+  const stored = localStorage.getItem('alabanza-songs');
+  if (stored) {
+    SONGS = JSON.parse(stored);
+  } else {
+    SONGS = JSON.parse(JSON.stringify(INITIAL_SONGS));
+    saveSongsToStorage();
+  }
+}
+
+function saveSongsToStorage() {
+  localStorage.setItem('alabanza-songs', JSON.stringify(SONGS));
+  renderSongList();
+  updateManagerStats();
+}
+
+// ══════════════════════════════════════════
+//  MOTOR NASHVILLE
+// ══════════════════════════════════════════
+const CHROMATIC      = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const ENHARMONIC     = { 'Db':'C#','Eb':'D#','Fb':'E','Gb':'F#','Ab':'G#','Bb':'A#','Cb':'B','E#':'F','B#':'C' };
+const MAJOR_INTERVALS = [0,2,4,5,7,9,11];
+const DEGREE_NAMES   = { 1:'Tónica',2:'Supertónica',3:'Mediante',4:'Subdominante',5:'Dominante',6:'Superdominante',7:'Sensible' };
+
+const normalize = n => ENHARMONIC[n] || n;
+
+function buildMajorScale(key) {
+  const idx = CHROMATIC.indexOf(normalize(key));
+  if (idx === -1) return null;
+  return MAJOR_INTERVALS.map(i => CHROMATIC[(idx+i)%12]);
+}
+
+function parseChordRoot(chord) {
+  if (chord.length >= 2 && (chord[1]==='#'||chord[1]==='b'))
+    return { root: chord.substring(0,2), quality: chord.substring(2) };
+  return { root: chord[0], quality: chord.substring(1) };
+}
+
+function chordToNashville(chord, scale) {
+  if (!chord || !scale) return { number:chord, quality:'', original:chord };
+  let slash='', main=chord;
+  const si = chord.indexOf('/');
+  if (si > 0) {
+    main = chord.substring(0,si);
+    const bi = scale.indexOf(normalize(chord.substring(si+1)));
+    slash = '/' + (bi>=0 ? String(bi+1) : chord.substring(si+1));
+  }
+  const { root, quality } = parseChordRoot(main);
+  const deg = scale.indexOf(normalize(root));
+  if (deg === -1) return { number:chord, quality:'', slash:'', original:chord, chromatic:true };
+  return { number:String(deg+1), quality, slash, original:chord, chromatic:false, degreeName:DEGREE_NAMES[deg+1]||'' };
+}
+
+function convertSection(chords, key) {
+  const scale = buildMajorScale(key);
+  return scale ? chords.map(c => chordToNashville(c, scale)) : [];
+}
+
+// ══════════════════════════════════════════
+//  FAVORITOS
+// ══════════════════════════════════════════
+let favorites = new Set(
+  JSON.parse(localStorage.getItem('alabanza-favs') || '[]')
+);
+
+function saveFavorites() {
+  localStorage.setItem('alabanza-favs', JSON.stringify([...favorites]));
+}
+
+function toggleFavorite(event, songId) {
+  event.stopPropagation();
+  if (favorites.has(songId)) {
+    favorites.delete(songId);
+  } else {
+    favorites.add(songId);
+  }
+  saveFavorites();
+  renderSongList();
+}
+
+// ══════════════════════════════════════════
+//  TEMA DARK / LIGHT
+// ══════════════════════════════════════════
+function toggleTheme() {
+  const light = document.body.classList.toggle('light');
+  document.getElementById('theme-icon').textContent  = light ? '☀️' : '🌙';
+  document.getElementById('theme-label').textContent = light ? 'Modo claro' : 'Modo oscuro';
+  localStorage.setItem('alabanza-theme', light ? 'light' : 'dark');
+}
+
+// ══════════════════════════════════════════
+//  SIDEBAR
+// ══════════════════════════════════════════
+function toggleSidebar() {
+  document.body.classList.toggle('sidebar-hidden');
+}
+
+// ══════════════════════════════════════════
+//  RENDER — LISTA SIDEBAR
+// ══════════════════════════════════════════
+let activeSongId = null;
+
+function buildSongItem(song, index) {
+  const isFav = favorites.has(song.id);
+  const isActive = activeSongId === song.id;
+  return `
+    <div class="song-item${isActive?' active':''}" id="item-${song.id}"
+         data-active="${isActive}" onclick="loadSong(${song.id})">
+      <div class="song-num">${String(index).padStart(2,'0')}</div>
+      <div class="song-info">
+        <div class="song-title-list">${song.title}</div>
+        <div class="song-meta">${song.artist} · ${song.key} Mayor</div>
+      </div>
+      <button class="star-btn${isFav?' fav':''}"
+              onclick="toggleFavorite(event,${song.id})"
+              title="${isFav?'Quitar de favoritos':'Añadir a favoritos'}"
+              aria-label="${isFav?'Quitar favorito':'Añadir favorito'}">
+        ${isFav ? '★' : '☆'}
+      </button>
+    </div>`;
+}
+
+function renderSongList(filtered) {
+  const baseList = filtered || SONGS;
+  const container = document.getElementById('song-list');
+
+  if (!baseList.length) {
+    container.innerHTML = '<div class="no-results">No se encontraron canciones.</div>';
+    return;
+  }
+
+  const favSongs   = baseList.filter(s => favorites.has(s.id));
+  const restSongs  = baseList.filter(s => !favorites.has(s.id));
+  let html = '';
+  let counter = 1;
+
+  if (favSongs.length) {
+    html += `<div class="list-section-header" style="color:var(--gold-dim);">★ Favoritos · ${favSongs.length}</div>`;
+    html += favSongs.map(song => buildSongItem(song, counter++)).join('');
+
+    if (restSongs.length) {
+      html += `<div class="list-section-header" style="margin-top:6px;">Repertorio · ${restSongs.length}</div>`;
+      html += restSongs.map(song => buildSongItem(song, counter++)).join('');
+    }
+  } else {
+    html += `<div class="list-section-header">Repertorio · ${baseList.length} canciones</div>`;
+    html += baseList.map(song => buildSongItem(song, counter++)).join('');
+  }
+
+  container.innerHTML = html;
+}
+
+function filterSongs(q) {
+  q = q.toLowerCase().trim();
+  if (!q) { renderSongList(); return; }
+  renderSongList(SONGS.filter(s =>
+    s.title.toLowerCase().includes(q) ||
+    s.artist.toLowerCase().includes(q) ||
+    s.key.toLowerCase().includes(q)
+  ));
+}
+
+// ══════════════════════════════════════════
+//  RENDER — VISTA DE CANCIÓN
+// ══════════════════════════════════════════
+function loadSong(songId) {
+  activeSongId = songId;
+  document.querySelectorAll('.song-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('item-'+songId);
+  if (el) el.classList.add('active');
+
+  const song = SONGS.find(s => s.id===songId);
+  if (!song) return;
+
+  const scale    = buildMajorScale(song.key);
+  const scaleStr = scale ? scale.join(' · ') : '—';
+
+  const sectionsHTML = song.sections.map(sec => {
+    const cards = convertSection(sec.chords, song.key).map(c => `
+      <div class="chord-card${c.chromatic?' chromatic':''}" title="${c.degreeName||c.original}">
+        <div class="chord-number">${c.number}${c.slash||''}</div>
+        <div class="chord-quality">${c.quality||'&nbsp;'}</div>
+        <div class="chord-original">${c.original}</div>
+      </div>`).join('');
+    return `
+      <div class="chart-section">
+        <div class="section-name">${sec.name}</div>
+        <div class="chords-row">${cards}</div>
+      </div>`;
+  }).join('');
+
+  const legendHTML = `
+    <div style="margin-top:36px;">
+      <div class="section-name">Referencia de Grados</div>
+      <div class="legend">
+        ${Object.entries(DEGREE_NAMES).map(([n,name])=>`
+          <div class="legend-item">
+            <span class="legend-num">${n}</span><span>${name}</span>
+          </div>`).join('')}
+        <div class="legend-item" style="color:rgba(154,136,204,0.7);">
+          <span class="legend-num" style="color:#9A88CC;">(X)</span>
+          <span>Acorde cromático</span>
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('content-area').innerHTML = `
+    <div class="bg-key-deco" aria-hidden="true">${song.key}</div>
+    <div id="song-view">
+      <div class="song-artist-label">${song.artist}</div>
+      <h1 class="song-main-title">${song.title}</h1>
+      <div class="deco-line" style="width:240px; margin-bottom:20px;"></div>
+      <div class="meta-row">
+        <div class="meta-item">
+          <span class="meta-label">Tonalidad</span>
+          <span class="key-pill">${song.key} Mayor</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">BPM</span>
+          <span class="meta-value">${song.bpm||'—'}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Compás</span>
+          <span class="meta-value">${song.timeSignature||'4/4'}</span>
+        </div>
+        <div class="meta-item" style="flex:1; min-width:220px;">
+          <span class="meta-label">Escala (${song.key} Mayor)</span>
+          <span class="scale-display">${scaleStr}</span>
+        </div>
+      </div>
+      <div class="deco-line" style="margin:24px 0 32px;"></div>
+      <div>
+        <div style="font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.22em;
+                    text-transform:uppercase; color:var(--gold-dim); margin-bottom:28px;">
+          Cifrado en Sistema Numérico Nashville
+        </div>
+        ${sectionsHTML}
+      </div>
+      <div class="deco-line"></div>
+      ${legendHTML}
+      <div style="height:40px;"></div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+//  MANAGER - MODAL
+// ══════════════════════════════════════════
+let managerSections = [];
+let currentSongId = null;
+
+function openManager() {
+  document.getElementById('managerModal').classList.add('active');
+  renderManagerUI();
+}
+
+function closeManager() {
+  document.getElementById('managerModal').classList.remove('active');
+  currentSongId = null;
+  managerSections = [];
+}
+
+function renderManagerUI() {
+  const managerBody = document.getElementById('managerBody');
+  
+  let html = `
+    <div class="manager-container">
+      <!-- LEFT PANEL: Formulario -->
+      <div class="manager-card">
+        <h3>Nueva Canción</h3>
+        <div id="alertContainer"></div>
+        
+        <div class="form-group">
+          <label>ID</label>
+          <input type="text" id="songId" placeholder="Auto generado" readonly>
+        </div>
+        
+        <div class="form-group">
+          <label>Título *</label>
+          <input type="text" id="title" placeholder="Nombre de la canción">
+        </div>
+        
+        <div class="form-group">
+          <label>Artista</label>
+          <input type="text" id="artist" placeholder="Artista">
+        </div>
+        
+        <div class="form-group">
+          <label>Tonalidad</label>
+          <input type="text" id="key" placeholder="Ej: C, Dm, F#">
+        </div>
+        
+        <div class="form-group">
+          <label>BPM</label>
+          <input type="number" id="bpm" placeholder="120">
+        </div>
+        
+        <div class="form-group">
+          <label>Compás</label>
+          <input type="text" id="timeSignature" placeholder="4/4">
+        </div>
+        
+        <div class="form-group">
+          <label>YouTube ID</label>
+          <input type="text" id="youtubeId" placeholder="Video ID">
+        </div>
+        
+        <div class="form-group">
+          <label>Archivo de Audio</label>
+          <input type="text" id="audioFile" placeholder="Nombre del archivo">
+        </div>
+        
+        <h3 style="margin-top: 24px; margin-bottom: 16px;">Secciones</h3>
+        
+        <div class="form-group">
+          <label>Nombre de Sección</label>
+          <input type="text" id="sectionName" placeholder="Intro, Verso, Coro...">
+        </div>
+        
+        <div class="form-group">
+          <label>Acordes (separados por coma)</label>
+          <textarea id="sectionChords" class="chords-input" placeholder="C, F, G, C"></textarea>
+        </div>
+        
+        <button class="btn btn-secondary" onclick="addSection()" style="width:100%; margin-bottom:16px;">
+          <i class="fas fa-plus"></i> Agregar Sección
+        </button>
+        
+        <div id="sectionsList"></div>
+        
+        <div style="display:flex; gap:10px; margin-top:24px;">
+          <button class="btn btn-primary" onclick="saveSong()" style="flex:1;">
+            <i class="fas fa-save"></i> Guardar Canción
+          </button>
+          <button class="btn btn-secondary" onclick="resetManagerForm()" style="flex:1;">
+            <i class="fas fa-redo"></i> Limpiar
+          </button>
+        </div>
+      </div>
+      
+      <!-- RIGHT PANEL: Lista y Estadísticas -->
+      <div class="manager-card">
+        <h3>Canciones</h3>
+        
+        <div class="stats-container" id="stats"></div>
+        
+        <div class="form-group" style="margin-bottom: 16px;">
+          <input type="text" id="searchInput" placeholder="Buscar canción..." 
+                 oninput="filterManagerSongs()">
+        </div>
+        
+        <div id="songsList" style="flex: 1; overflow-y: auto; margin-bottom: 16px;"></div>
+        
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <button class="btn btn-success" onclick="exportJSON()" style="width:100%;">
+            <i class="fas fa-download"></i> Descargar JSON
+          </button>
+          <label class="btn btn-secondary" style="width:100%; justify-content:center; margin:0;">
+            <i class="fas fa-upload"></i> Importar JSON
+            <input type="file" id="jsonFile" accept=".json" onchange="importJSON(event)" style="display:none;">
+          </label>
+          <button class="btn btn-danger" onclick="clearAll()" style="width:100%;">
+            <i class="fas fa-trash"></i> Borrar Todo
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  managerBody.innerHTML = html;
+  renderManagerSongs();
+  updateManagerStats();
+}
+
+function addSection() {
+  const name = document.getElementById('sectionName').value.trim();
+  const chordsStr = document.getElementById('sectionChords').value.trim();
+  
+  if (!name || !chordsStr) {
+    showManagerAlert('Por favor completa el nombre y los acordes', 'danger');
+    return;
+  }
+  
+  const chords = chordsStr.split(',').map(c => c.trim()).filter(c => c);
+  managerSections.push({ name, chords });
+  
+  document.getElementById('sectionName').value = '';
+  document.getElementById('sectionChords').value = '';
+  
+  renderSectionsList();
+}
+
+function renderSectionsList() {
+  const list = document.getElementById('sectionsList');
+  
+  if (!managerSections.length) {
+    list.innerHTML = '<div class="empty-state"><p style="color:var(--text-muted);">Sin secciones aún</p></div>';
+    return;
+  }
+  
+  list.innerHTML = managerSections.map((sec, idx) => `
+    <div class="section-item">
+      <div>
+        <div class="section-item-title">${sec.name}</div>
+        <div class="section-item-chords">${sec.chords.join(', ')}</div>
+      </div>
+      <button class="btn btn-danger btn-small" onclick="managerSections.splice(${idx},1); renderSectionsList();">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+  `).join('');
+}
+
+function saveSong() {
+  const title = document.getElementById('title').value.trim();
+  const artist = document.getElementById('artist').value.trim() || 'Sin artista';
+  const key = document.getElementById('key').value.trim() || 'C';
+  const bpm = parseInt(document.getElementById('bpm').value) || null;
+  const timeSignature = document.getElementById('timeSignature').value.trim() || '4/4';
+  const youtubeId = document.getElementById('youtubeId').value.trim() || '';
+  const audioFile = document.getElementById('audioFile').value.trim() || '';
+  const songId = document.getElementById('songId').value;
+  
+  if (!title) {
+    showManagerAlert('El título es requerido', 'danger');
+    return;
+  }
+  
+  if (!managerSections.length) {
+    showManagerAlert('Agrega al menos una sección', 'danger');
+    return;
+  }
+  
+  const song = {
+    id: currentSongId || parseInt(songId) || Date.now(),
+    title,
+    artist,
+    key,
+    bpm,
+    timeSignature,
+    youtubeId,
+    audioFile,
+    sections: JSON.parse(JSON.stringify(managerSections))
+  };
+  
+  if (currentSongId) {
+    const index = SONGS.findIndex(s => s.id === currentSongId);
+    SONGS[index] = song;
+    showManagerAlert('Canción actualizada correctamente', 'success');
+    currentSongId = null;
+  } else {
+    SONGS.push(song);
+    showManagerAlert('Canción guardada correctamente', 'success');
+  }
+  
+  saveSongsToStorage();
+  resetManagerForm();
+}
+
+function editSong(id) {
+  const song = SONGS.find(s => s.id === id);
+  if (!song) return;
+  
+  document.getElementById('title').value = song.title;
+  document.getElementById('artist').value = song.artist;
+  document.getElementById('key').value = song.key || '';
+  document.getElementById('bpm').value = song.bpm || '';
+  document.getElementById('timeSignature').value = song.timeSignature || '';
+  document.getElementById('youtubeId').value = song.youtubeId || '';
+  document.getElementById('audioFile').value = song.audioFile || '';
+  document.getElementById('songId').value = song.id;
+  
+  managerSections = JSON.parse(JSON.stringify(song.sections || []));
+  renderSectionsList();
+  
+  currentSongId = id;
+  document.querySelector('.manager-card').scrollIntoView({ behavior: 'smooth' });
+  renderManagerSongs();
+}
+
+function deleteSong(id) {
+  if (confirm('¿Estás seguro de que deseas eliminar esta canción?')) {
+    SONGS = SONGS.filter(s => s.id !== id);
+    saveSongsToStorage();
+    resetManagerForm();
+    showManagerAlert('Canción eliminada', 'success');
+  }
+}
+
+function renderManagerSongs() {
+  const list = document.getElementById('songsList');
+  const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
+  
+  const filtered = SONGS.filter(song => 
+    song.title.toLowerCase().includes(searchTerm) ||
+    song.artist.toLowerCase().includes(searchTerm)
+  );
+  
+  if (!filtered.length) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-inbox"></i>
+        <p>${SONGS.length === 0 ? 'No hay canciones aún' : 'No se encontraron resultados'}</p>
+      </div>
+    `;
+    return;
+  }
+  
+  list.innerHTML = filtered.map(song => `
+    <div class="song-item-manager${currentSongId === song.id ? ' active' : ''}" onclick="editSong(${song.id})">
+      <div class="song-item-manager-title">${song.title}</div>
+      <div class="song-item-manager-meta">
+        <i class="fas fa-user"></i> ${song.artist} 
+        ${song.key ? `| <i class="fas fa-music"></i> ${song.key}` : ''}
+        ${song.bpm ? `| <i class="fas fa-tachometer-alt"></i> ${song.bpm} BPM` : ''}
+      </div>
+      <div style="margin-top: 8px; font-size: 0.75rem; color: var(--text-muted);">
+        <i class="fas fa-layer-group"></i> ${song.sections.length} secciones
+      </div>
+      <div style="margin-top: 8px;">
+        <button class="btn btn-danger btn-small" onclick="event.stopPropagation(); deleteSong(${song.id})">
+          <i class="fas fa-trash"></i> Eliminar
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterManagerSongs() {
+  renderManagerSongs();
+}
+
+function updateManagerStats() {
+  const stats = document.getElementById('stats');
+  if (!stats) return;
+  
+  const totalSongs = SONGS.length;
+  const totalSections = SONGS.reduce((sum, song) => sum + song.sections.length, 0);
+  const totalChords = SONGS.reduce((sum, song) => 
+    sum + song.sections.reduce((sSum, section) => sSum + section.chords.length, 0), 0
+  );
+  
+  stats.innerHTML = `
+    <div class="stat-box">
+      <div class="stat-number">${totalSongs}</div>
+      <div class="stat-label">Canciones</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number">${totalSections}</div>
+      <div class="stat-label">Secciones</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number">${totalChords}</div>
+      <div class="stat-label">Acordes</div>
+    </div>
+  `;
+}
+
+function resetManagerForm() {
+  document.getElementById('title').value = '';
+  document.getElementById('artist').value = '';
+  document.getElementById('key').value = '';
+  document.getElementById('bpm').value = '';
+  document.getElementById('timeSignature').value = '';
+  document.getElementById('youtubeId').value = '';
+  document.getElementById('audioFile').value = '';
+  document.getElementById('sectionName').value = '';
+  document.getElementById('songId').value = '';
+  managerSections = [];
+  currentSongId = null;
+  renderSectionsList();
+  renderManagerSongs();
+}
+
+function exportJSON() {
+  if (!SONGS.length) {
+    showManagerAlert('No hay canciones para descargar', 'danger');
+    return;
+  }
+  
+  const dataStr = JSON.stringify(SONGS, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `canciones-${new Date().toISOString().split('T')[0]}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+  showManagerAlert('JSON descargado correctamente', 'success');
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (Array.isArray(imported)) {
+        SONGS = [...SONGS, ...imported];
+        saveSongsToStorage();
+        showManagerAlert(`${imported.length} canción(es) importada(s) correctamente`, 'success');
+        renderManagerSongs();
+      } else {
+        showManagerAlert('El archivo JSON debe contener un array de canciones', 'danger');
+      }
+    } catch (error) {
+      showManagerAlert('Error al importar JSON: ' + error.message, 'danger');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function clearAll() {
+  if (confirm('¿Estás seguro de que deseas eliminar TODAS las canciones? Esta acción no se puede deshacer.')) {
+    SONGS = [];
+    saveSongsToStorage();
+    resetManagerForm();
+    showManagerAlert('Todas las canciones han sido eliminadas', 'success');
+  }
+}
+
+function showManagerAlert(message, type = 'success') {
+  const container = document.getElementById('alertContainer');
+  if (!container) return;
+  
+  const alert = document.createElement('div');
+  alert.className = `alert alert-${type}`;
+  alert.innerHTML = `
+    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+    <span>${message}</span>
+  `;
+  container.appendChild(alert);
+  
+  setTimeout(() => {
+    alert.remove();
+  }, 3000);
+}
+
+// ══════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════
+(function init() {
+  loadSongsFromStorage();
+  
+  if (localStorage.getItem('alabanza-theme') === 'light') {
+    document.body.classList.add('light');
+    document.getElementById('theme-icon').textContent  = '☀️';
+    document.getElementById('theme-label').textContent = 'Modo claro';
+  }
+  
+  renderSongList();
+  const c = document.getElementById('welcome-count');
+  if (c) c.textContent = SONGS.length + ' canciones en el repertorio';
+  
+  // Cerrar modal al presionar ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeManager();
+  });
+  
+  // Cerrar modal al hacer clic fuera
+  document.getElementById('managerModal').addEventListener('click', (e) => {
+    if (e.target.id === 'managerModal') closeManager();
+  });
+})();
+
+</script>
+
+</body>
+</html>
