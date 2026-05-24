@@ -25,8 +25,6 @@
       --text-muted: #6B6B6B;
       --accent: #2EAADC;
       --accent-soft: rgba(46, 170, 220, 0.15);
-      --gold: #D4AF37;
-      --gold-dim: rgba(212, 175, 55, 0.6);
     }
 
     /* ══════════════════════════════════
@@ -283,7 +281,7 @@
     }
 
     .star-btn:hover { color: var(--text-secondary); }
-    .star-btn.fav { color: var(--gold); }
+    .star-btn.fav { color: var(--accent); }
 
     /* ══════════════════════════════════
        MAIN CONTENT
@@ -400,7 +398,7 @@
       font-size: 0.65rem;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--gold-dim);
+      color: var(--accent);
       margin-bottom: 12px;
     }
 
@@ -464,7 +462,7 @@
       font-size: 0.75rem;
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: var(--gold-dim);
+      color: var(--accent);
       margin-bottom: 12px;
       font-weight: 500;
     }
@@ -1092,7 +1090,7 @@ const INITIAL_SONGS = [
   title: "Eco (Echo)",
   artist: "Elevation Worship",
   key: "D",
-  bpm: 104,
+  bpm: 140,
   timeSignature: "4/4",
   youtubeId: " ",
   audioFile: "Eco - Elevation Worship.mp3",
@@ -1274,7 +1272,7 @@ const INITIAL_SONGS = [
   title: "Gracia Sublime Es",
   artist: "En Espíritu y en Verdad",
   key: "B",
-  bpm: 101,
+  bpm: 100,
   timeSignature: "4/4",
   youtubeId: " ",
   audioFile: "Gracia Sublime es - En Espíritu y en Verdad.mp3",
@@ -1402,7 +1400,7 @@ const INITIAL_SONGS = [
   title: "AMOR SIN COMPARACIÓN",
   artist: "Hillsong",
   key: "G", 
-  bpm: "74", // Tempo estándar para esta versión de Hillsong
+  bpm: 74, // Tempo estándar para esta versión de Hillsong
   timeSignature: "4/4",
   youtubeId: "vBfMshfP300", // ID sugerido para la versión en español
   audioFile: " ",
@@ -1434,7 +1432,7 @@ const INITIAL_SONGS = [
   title: "Aquí estamos para ti", 
   artist: "Planetshakers", // Artista original de la obra (el PDF indica "Aquí estamos para ti" como título/autor [cite: 106, 107])
   key: "C", 
-  bpm: "85", 
+  bpm: 85, 
   timeSignature: "4/4", 
   youtubeId: " ", 
   audioFile: " ",
@@ -1534,7 +1532,7 @@ const INITIAL_SONGS = [
   title: "Coritos (Medley)",
   artist: "Israel Houghton",
   key: "C",
-  bpm: "112",
+  bpm: 112,
   timeSignature: "4/4",
   youtubeId: " ",
   audioFile: " ",
@@ -1582,7 +1580,7 @@ const INITIAL_SONGS = [
   title: "Danzando",
   artist: "Christine D' Clario",
   key: "Bm",
-  bpm: "128", // Tempo estándar para esta canción
+  bpm: 128, // Tempo estándar para esta canción
   timeSignature: "4/4",
   youtubeId: " ",
   audioFile: " ",
@@ -1802,7 +1800,7 @@ const INITIAL_SONGS = [
   title: "Dios de maravillas",
   artist: "Christine D'Clario",
   key: "D",
-  bpm: "75", 
+  bpm: 75, 
   timeSignature: "4/4",
   youtubeId: " ",
   audioFile: " ",
@@ -1838,7 +1836,7 @@ const INITIAL_SONGS = [
   title: "Dios Incomparable",
   artist: "Generación 12 & Marcela Gándara",
   key: "B",
-  bpm: "78",
+  bpm: 78,
   timeSignature: "4/4",
   youtubeId: " ", // ID sugerido: 4yN7hUjW-Uo
   audioFile: " ",
@@ -1870,7 +1868,7 @@ const INITIAL_SONGS = [
   title: "El gran yo soy",
   artist: "Julissa",
   key: "G",
-  bpm: "76", // Tempo aproximado para esta versión
+  bpm: 76, // Tempo aproximado para esta versión
   timeSignature: "4/4",
   youtubeId: " ",
   audioFile: " ",
@@ -1902,7 +1900,7 @@ const INITIAL_SONGS = [
   title: "El Poder de tu Amor (Medley)",
   artist: "Ingrid Rosario",
   key: "G",
-  bpm: "70",
+  bpm: 70,
   timeSignature: "4/4",
   youtubeId: " ",
   audioFile: " ",
@@ -1934,7 +1932,7 @@ const INITIAL_SONGS = [
   title: "El rostro de mi amado",
   artist: "Montesanto ft. Belen Losa", // No se especifica el artista en el documento
   key: "Bbm",
-  bpm: "85", // No especificado en el documento
+  bpm: 85, // No especificado en el documento
   timeSignature: "4/4",
   youtubeId: " ",
   audioFile: " ",
@@ -3343,7 +3341,7 @@ function renderSongList(filtered) {
   let counter = 1;
 
   if (favSongs.length) {
-    html += `<div class="list-section-header" style="color:var(--gold-dim);">★ Favoritos · ${favSongs.length}</div>`;
+    html += `<div class="list-section-header" style="color:var(--accent);">★ Favoritos · ${favSongs.length}</div>`;
     html += favSongs.map(song => buildSongItem(song, counter++)).join('');
 
     if (restSongs.length) {
@@ -3439,7 +3437,7 @@ function loadSong(songId) {
       <div class="deco-line" style="margin:24px 0 32px;"></div>
       <div>
         <div style="font-family:'Cinzel',serif; font-size:0.65rem; letter-spacing:0.22em;
-                    text-transform:uppercase; color:var(--gold-dim); margin-bottom:28px;">
+                    text-transform:uppercase; color:var(--accent); margin-bottom:28px;">
           Cifrado en Sistema Numérico Nashville
         </div>
         ${sectionsHTML}
