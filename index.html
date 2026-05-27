@@ -1149,6 +1149,11 @@
           <span id="theme-icon">🌙</span>
           <span id="theme-label">Modo oscuro</span>
         </button>
+        <button class="header-btn" id="storage-indicator" 
+                style="cursor: default;" 
+                title="Estado de almacenamiento">
+          ⏳
+        </button>
         <button class="header-btn primary" onclick="openManager()" title="Gestor de canciones">
           <i class="fas fa-plus"></i>
           <span>Gestor</span>
@@ -3584,24 +3589,368 @@
 ];
 
     // ══════════════════════════════════════════
-    //  GESTIÓN DE DATOS CON LOCALSTORAGE
+    //  GESTIÓN DE DATOS - ALMACENAMIENTO ROBUSTO
     // ══════════════════════════════════════════
     let SONGS = [];
+    let db = null;
+    let storageStatus = { available: false, type: null, backup: false };
+    let saveTimeout;
+    const SAVE_DELAY = 500; // milisegundos
 
-    function loadSongsFromStorage() {
-      const stored = localStorage.getItem('alabanza-songs');
-      if (stored) {
-        SONGS = JSON.parse(stored);
-      } else {
-        SONGS = JSON.parse(JSON.stringify(INITIAL_SONGS));
-        saveSongsToStorage();
+    // ──────────────────────────────────────────
+    // Inicialización de IndexedDB
+    // ──────────────────────────────────────────
+    async function initIndexedDB() {
+      return new Promise((resolve) => {
+        try {
+          const request = indexedDB.open('AlabanzaDB', 1);
+
+          request.onerror = () => {
+            console.warn('⚠️ IndexedDB no disponible');
+            storageStatus.available = false;
+            storageStatus.type = 'localStorage';
+            resolve(false);
+          };
+
+          request.onsuccess = () => {
+            db = request.result;
+            storageStatus.available = true;
+            storageStatus.type = 'IndexedDB';
+            console.log('✅ IndexedDB inicializado correctamente');
+            resolve(true);
+          };
+
+          request.onupgradeneeded = (e) => {
+            const newDb = e.target.result;
+            if (!newDb.objectStoreNames.contains('songs')) {
+              newDb.createObjectStore('songs', { keyPath: 'timestamp' });
+            }
+          };
+        } catch (error) {
+          console.warn('⚠️ IndexedDB error:', error);
+          storageStatus.available = false;
+          storageStatus.type = 'localStorage';
+          resolve(false);
+        }
+      });
+    }
+
+    // ──────────────────────────────────────────
+    // Verificar disponibilidad de localStorage
+    // ──────────────────────────────────────────
+    function isLocalStorageAvailable() {
+      try {
+        const test = '__storage_test__';
+        localStorage.setItem(test, test);
+        localStorage.removeItem(test);
+        return true;
+      } catch (error) {
+        console.warn('⚠️ localStorage no disponible:', error);
+        return false;
       }
     }
 
-    function saveSongsToStorage() {
-      localStorage.setItem('alabanza-songs', JSON.stringify(SONGS));
-      renderSongList();
-      updateManagerStats();
+    // ──────────────────────────────────────────
+    // Cargar desde IndexedDB
+    // ──────────────────────────────────────────
+    function loadFromIndexedDB() {
+      return new Promise((resolve) => {
+        try {
+          if (!db) {
+            resolve(null);
+            return;
+          }
+
+          const transaction = db.transaction('songs', 'readonly');
+          const store = transaction.objectStore('songs');
+          const request = store.getAll();
+
+          request.onsuccess = () => {
+            const data = request.result;
+            if (data && data.length > 0) {
+              try {
+                const parsed = JSON.parse(data[0].data);
+                console.log('✅ Cargado desde IndexedDB');
+                resolve(parsed);
+              } catch (e) {
+                console.error('Error al parsear IndexedDB:', e);
+                resolve(null);
+              }
+            } else {
+              resolve(null);
+            }
+          };
+
+          request.onerror = () => {
+            console.warn('Error al leer IndexedDB');
+            resolve(null);
+          };
+        } catch (error) {
+          console.warn('Error en loadFromIndexedDB:', error);
+          resolve(null);
+        }
+      });
+    }
+
+    // ──────────────────────────────────────────
+    // Guardar en IndexedDB
+    // ──────────────────────────────────────────
+    function saveToIndexedDB(songs) {
+      return new Promise((resolve) => {
+        try {
+          if (!db) {
+            resolve(false);
+            return;
+          }
+
+          const transaction = db.transaction('songs', 'readwrite');
+          const store = transaction.objectStore('songs');
+          
+          store.clear();
+          
+          const data = {
+            timestamp: Date.now(),
+            data: JSON.stringify(songs),
+            version: 1
+          };
+
+          const request = store.add(data);
+
+          request.onsuccess = () => {
+            console.log('✅ Guardado en IndexedDB');
+            resolve(true);
+          };
+
+          request.onerror = () => {
+            console.warn('Error al guardar en IndexedDB');
+            resolve(false);
+          };
+        } catch (error) {
+          console.warn('Error en saveToIndexedDB:', error);
+          resolve(false);
+        }
+      });
+    }
+
+    // ──────────────────────────────────────────
+    // Crear Auto-Backup
+    // ──────────────────────────────────────────
+    function createAutoBackup() {
+      try {
+        const timestamp = new Date().toISOString();
+        const backupKey = 'alabanza-backup-' + Date.now();
+        const backup = {
+          timestamp: timestamp,
+          count: SONGS.length,
+          data: JSON.stringify(SONGS)
+        };
+
+        localStorage.setItem(backupKey, JSON.stringify(backup));
+
+        // Mantener solo últimos 10 backups
+        const backupKeys = Object.keys(localStorage)
+          .filter(k => k.startsWith('alabanza-backup-'))
+          .sort()
+          .reverse();
+
+        if (backupKeys.length > 10) {
+          for (let i = 10; i < backupKeys.length; i++) {
+            localStorage.removeItem(backupKeys[i]);
+          }
+        }
+
+        storageStatus.backup = true;
+        console.log('✅ Auto-backup creado');
+      } catch (error) {
+        console.warn('Error al crear backup:', error);
+        storageStatus.backup = false;
+      }
+    }
+
+    // ──────────────────────────────────────────
+    // Actualizar indicador visual
+    // ──────────────────────────────────────────
+    function updateStorageIndicator() {
+      try {
+        const indicator = document.getElementById('storage-indicator');
+        if (!indicator) return;
+
+        let icon, title, color;
+
+        if (storageStatus.available) {
+          icon = '✓';
+          title = `Almacenamiento: ${storageStatus.type}`;
+          color = '#43A047';
+        } else {
+          icon = '!';
+          title = 'Almacenamiento con limitaciones';
+          color = '#FBC02D';
+        }
+
+        indicator.textContent = icon;
+        indicator.title = title;
+        indicator.style.color = color;
+      } catch (error) {
+        console.warn('Error al actualizar indicador:', error);
+      }
+    }
+
+    // ──────────────────────────────────────────
+    // Restaurar desde Backup
+    // ──────────────────────────────────────────
+    function restoreFromBackup() {
+      try {
+        const backupKeys = Object.keys(localStorage)
+          .filter(k => k.startsWith('alabanza-backup-'))
+          .sort()
+          .reverse();
+
+        if (backupKeys.length === 0) {
+          showManagerAlert('No hay backups disponibles', 'warning');
+          return;
+        }
+
+        const latestBackup = JSON.parse(localStorage.getItem(backupKeys[0]));
+        SONGS = JSON.parse(latestBackup.data);
+        
+        saveSongsToStorage().then(() => {
+          const date = new Date(latestBackup.timestamp).toLocaleString();
+          showManagerAlert(`✅ Restaurado desde backup del ${date}`, 'success');
+          renderSongList();
+          updateManagerStats();
+        });
+      } catch (error) {
+        console.error('Error al restaurar backup:', error);
+        showManagerAlert('Error al restaurar backup', 'danger');
+      }
+    }
+
+    // ──────────────────────────────────────────
+    // Debounce para optimización
+    // ──────────────────────────────────────────
+    function debouncedSaveSongs() {
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        saveSongsToStorage();
+      }, SAVE_DELAY);
+    }
+
+    // ──────────────────────────────────────────
+    // Cargar canciones - NUEVA VERSION
+    // ──────────────────────────────────────────
+    async function loadSongsFromStorage() {
+      try {
+        // Intentar cargar desde IndexedDB
+        let songs = await loadFromIndexedDB();
+
+        // Si no hay datos en IndexedDB, buscar en localStorage
+        if (!songs) {
+          const stored = localStorage.getItem('alabanza-songs');
+          if (stored) {
+            try {
+              songs = JSON.parse(stored);
+              console.log('✅ Cargado desde localStorage');
+            } catch (e) {
+              console.error('Error al parsear localStorage:', e);
+              songs = null;
+            }
+          }
+        }
+
+        // Si aún sin datos, usar canciones iniciales
+        if (!songs) {
+          songs = JSON.parse(JSON.stringify(INITIAL_SONGS));
+          console.log('✅ Usando canciones iniciales');
+        }
+
+        // Validar que sea un array
+        if (!Array.isArray(songs)) {
+          console.warn('Datos no válidos, usando canciones iniciales');
+          songs = JSON.parse(JSON.stringify(INITIAL_SONGS));
+        }
+
+        SONGS = songs;
+        await debouncedSaveSongs();
+        return Promise.resolve();
+      } catch (error) {
+        console.error('Error al cargar canciones:', error);
+        SONGS = JSON.parse(JSON.stringify(INITIAL_SONGS));
+        return Promise.resolve();
+      }
+    }
+
+    // ──────────────────────────────────────────
+    // Guardar canciones - NUEVA VERSION
+    // ──────────────────────────────────────────
+    async function saveSongsToStorage() {
+      try {
+        // Validar que SONGS sea un array válido
+        if (!Array.isArray(SONGS)) {
+          console.warn('⚠️ SONGS no es un array válido');
+          return false;
+        }
+
+        // Validar que JSON es válido
+        try {
+          const jsonStr = JSON.stringify(SONGS);
+          JSON.parse(jsonStr);
+        } catch (e) {
+          console.error('⚠️ JSON no válido:', e);
+          return false;
+        }
+
+        // Intentar guardar en IndexedDB
+        const idbSuccess = await saveToIndexedDB(SONGS);
+        let success = idbSuccess;
+
+        // Fallback a localStorage si IndexedDB falla
+        if (!success) {
+          try {
+            const jsonStr = JSON.stringify(SONGS);
+            localStorage.setItem('alabanza-songs', jsonStr);
+            console.log('✅ Guardado en localStorage');
+            success = true;
+          } catch (error) {
+            // Si es QuotaExceededError, limpiar y reintentar
+            if (error.name === 'QuotaExceededError') {
+              console.warn('⚠️ localStorage lleno, limpiando backups...');
+              try {
+                const backupKeys = Object.keys(localStorage)
+                  .filter(k => k.startsWith('alabanza-backup-'));
+                backupKeys.forEach(key => localStorage.removeItem(key));
+                
+                const jsonStr = JSON.stringify(SONGS);
+                localStorage.setItem('alabanza-songs', jsonStr);
+                console.log('✅ Guardado en localStorage después de limpiar');
+                success = true;
+              } catch (e) {
+                console.error('⚠️ No se pudo guardar incluso después de limpiar:', e);
+                success = false;
+              }
+            } else {
+              console.error('⚠️ Error al guardar en localStorage:', error);
+              success = false;
+            }
+          }
+        }
+
+        // Crear auto-backup si fue exitoso
+        if (success) {
+          createAutoBackup();
+        }
+
+        // Actualizar indicador visual
+        updateStorageIndicator();
+
+        // Actualizar UI
+        renderSongList();
+        updateManagerStats();
+
+        return success;
+      } catch (error) {
+        console.error('Error en saveSongsToStorage:', error);
+        return false;
+      }
     }
 
     // ══════════════════════════════════════════
@@ -4347,7 +4696,14 @@ V1:
         showManagerAlert('Canción guardada correctamente', 'success');
       }
 
-      saveSongsToStorage();
+      saveSongsToStorage().then(success => {
+        if (!success) {
+          showManagerAlert(
+            '⚠️ Advertencia: Almacenamiento limitado, pero los datos se guardaron',
+            'warning'
+          );
+        }
+      });
       resetManagerForm();
       updateEditingBadge();
     }
@@ -4552,31 +4908,40 @@ V1:
     //  INIT
     // ══════════════════════════════════════════
     (function init() {
-      loadSongsFromStorage();
+      // Inicializar IndexedDB (no bloquea)
+      initIndexedDB().then(() => {
+        console.log('✅ Almacenamiento inicializado:', storageStatus.type);
+        updateStorageIndicator();
+      });
 
-      if (localStorage.getItem('alabanza-theme') === 'light') {
-        document.body.classList.add('light');
-        document.getElementById('theme-icon').textContent = '☀️';
-        document.getElementById('theme-label').textContent = 'Modo claro';
-      }
-
-      renderSongList();
-      const c = document.getElementById('welcome-count');
-      if (c) c.textContent = SONGS.length + ' canciones en el repertorio';
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          closeManager();
-          closeHelp();
+      // Cargar canciones (ahora es async)
+      loadSongsFromStorage().then(() => {
+        if (localStorage.getItem('alabanza-theme') === 'light') {
+          document.body.classList.add('light');
+          document.getElementById('theme-icon').textContent = '☀️';
+          document.getElementById('theme-label').textContent = 'Modo claro';
         }
-      });
 
-      document.getElementById('managerModal').addEventListener('click', (e) => {
-        if (e.target.id === 'managerModal') closeManager();
-      });
+        renderSongList();
+        const c = document.getElementById('welcome-count');
+        if (c) c.textContent = SONGS.length + ' canciones en el repertorio';
 
-      document.getElementById('helpModal').addEventListener('click', (e) => {
-        if (e.target.id === 'helpModal') closeHelp();
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            closeManager();
+            closeHelp();
+          }
+        });
+
+        document.getElementById('managerModal').addEventListener('click', (e) => {
+          if (e.target.id === 'managerModal') closeManager();
+        });
+
+        document.getElementById('helpModal').addEventListener('click', (e) => {
+          if (e.target.id === 'helpModal') closeHelp();
+        });
+
+        updateStorageIndicator();
       });
     })();
 
